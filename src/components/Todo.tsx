@@ -2,8 +2,8 @@ import { Todo } from "./TodoList";
 
 type PropsTodo = {
 	todo: Todo;
-	toggleFinish: (id: number) => void;
-	deleteTodo: (id: number) => void;
+	toggleFinish: (id: string, done: boolean) => void;
+	deleteTodo: (id: string) => void;
 };
 
 export default function Todo(props: PropsTodo) {
@@ -18,7 +18,7 @@ export default function Todo(props: PropsTodo) {
 						type="checkbox"
 						checked={todo.done}
 						onChange={() => {
-							toggleFinish(todo.id);
+							toggleFinish(todo.id, todo.done);
 						}}
 					/>
 					<p className={`${todo.done ? "text-neutral-600 line-through" : ""} text-xl`}>{todo.content}</p>
