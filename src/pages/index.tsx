@@ -1,69 +1,45 @@
-import AddTodo from "@/components/AddTodo";
-
-import TodoList, { Todo } from "@/components/TodoList";
-
-import { useState } from "react";
-
-const demoTodolist: Todo[] = [
-	{
-		id: 1,
-		content: "buy a macbook air",
-		done: false,
-	},
-	{
-		id: 2,
-		content: "drink milk",
-		done: true,
-	},
-	{
-		id: 3,
-		content: "hit the sack",
-		done: false,
-	},
-];
-
-function createTodo(content: string): Todo {
-	return {
-		id: Date.now(),
-		content: content,
-		done: false,
-	};
-}
-
+import { useUser } from "@clerk/clerk-react";
+import Head from "next/head";
+import Link from "next/link";
 export default function Home() {
-	const [todoList, setTodoList] = useState(demoTodolist);
-
-	function addTodo(content: string) {
-		setTodoList((todos) => {
-			return [createTodo(content), ...todos];
-		});
-	}
-
-	function toggleFinish(id: number) {
-		setTodoList((todos) => {
-			return todos.map((todo) => {
-				if (todo.id !== id) return todo;
-				else
-					return {
-						...todo,
-						done: !todo.done,
-					};
-			});
-		});
-	}
-
-	function deleteTodo(id: number) {
-		setTodoList((todos) => {
-			return todos.filter((todo) => todo.id !== id);
-		});
-	}
+	const { isSignedIn, user, isLoaded } = useUser();
 	return (
-		<main className="mt-20 flex h-screen flex-col items-center">
-			<div className="flex flex-col items-center ">
-				<h1 className="mb-10 text-5xl text-blue-600">Todolist App</h1>
-				<AddTodo addTodo={addTodo} />
-				<TodoList todolist={todoList} toggleFinish={toggleFinish} deleteTodo={deleteTodo} />
-			</div>
-		</main>
+		<>
+			<Head>
+				<title>Todolist</title>
+				<meta name="description" content="Todolist App" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<link rel="icon" href="/favicon.ico" sizes="any" />
+			</Head>
+			<main className="mt-20 flex h-screen flex-col items-center">
+				<div className="flex flex-col items-center ">
+					<h1 className="mb-10 text-5xl text-blue-600">Todolist App</h1>
+					{isLoaded &&
+						(isSignedIn ? (
+							<div className="flex flex-col items-center">
+								<p>Hello, {user.firstName}!</p>
+								<Link href="/todos" className="mt-3 rounded-lg bg-blue-600 p-2 text-white">
+									Go to your todos
+								</Link>
+							</div>
+						) : (
+							<div className="flex">
+								<Link
+									href="/sign-in"
+									className="mr-4 mt-1 cursor-pointer rounded-lg border border-blue-600 p-2 text-blue-600 shadow-md shadow-blue-600 duration-100 hover:bg-blue-700 hover:text-white"
+								>
+									Sign In
+								</Link>
+								<Link
+									href="/sign-up"
+									className="mt-1 cursor-pointer rounded-lg bg-blue-600 p-2 text-white shadow-md shadow-blue-600 duration-100 hover:bg-blue-700"
+								>
+									Sign Up
+								</Link>
+							</div>
+						))}
+				</div>
+			</main>
+		</>
 	);
 }
